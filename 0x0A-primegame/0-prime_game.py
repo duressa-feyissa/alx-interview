@@ -1,78 +1,49 @@
 #!/usr/bin/python3
 """
-Prime Game
+name of the player that won the most round
 """
 
 
-def findMultiples(num, targets):
+def get_primes(nums):
     """
-    Finds multiples of a given number within a list
+    the winner can be determine
     """
-    for i in targets:
-        if i % num == 0:
-            targets.remove(i)
-    return targets
-
-
-def isPrime(i):
-    """
-    Check if a number is prime.
-    """
-    if i == 1:
-        return False
-    for j in range(2, i):
-        if i % j == 0:
-            return False
-    return True
-
-
-def findPrimes(n):
-    """
-    Dispatch a given set into prime numbers and non-prime numbers.
-    """
-    counter = 0
-    target = list(n)
-    for i in range(1, len(target) + 1):
-        if isPrime(i):
-            counter += 1
-            target.remove(i)
-            target = findMultiples(i, target)
-        else:
-            pass
-    return counter
+    n = max(nums)
+    if n < 1:
+        return None
+    prime_cnt = [0] * len(nums)
+    prime = [True for _ in range(n + 1)]
+    p = 2
+    prime[0] = prime[1] = False
+    while (p * p <= n):
+        if prime[p]:
+            for j in range(p * 2, n + 1, p):
+                prime[j] = False
+        p += 1
+    for i in range(len(nums)):
+        cnt = 0
+        for j in range(nums[i] + 1):
+            if (prime[j]):
+                cnt += 1
+        prime_cnt[i] = cnt
+    return prime_cnt
 
 
 def isWinner(x, nums):
     """
-    Maria and Ben are playing a game.Given a set of consecutive integers
-    starting from 1 up to and including n, they take turns choosing a
-    prime number from the set and removing that number and its
-    multiples from the set.
-    The player that cannot make a move loses the game.
-
-    They play x rounds of the game, where n may be different for each round.
-    Assuming Maria always goes first and both players play optimally,
-    determine who the winner of each game is.
+    play x round of the game
     """
-    players = {'Maria': 0, 'Ben': 0}
-    cluster = set()
-    for elem in range(x):
-        nums.sort()
-        num = nums[elem]
-        for i in range(1, num + 1):
-            cluster.add(i)
-            if i == num + 1:
-                break
-        temp = findPrimes(cluster)
-
-        if temp % 2 == 0:
-            players['Ben'] += 1
-        elif temp % 2 != 0:
-            players['Maria'] += 1
-
-    if players['Maria'] > players['Ben']:
-        return 'Maria'
-    elif players['Maria'] < players['Ben']:
-        return 'Ben'
-    else:
+    if x <= 0 or nums is None or min(nums) < 0:
         return None
+    prime_cnt = get_primes(nums)
+    if prime_cnt is None:
+        return None
+    loses = 0
+    for i in prime_cnt:
+        if i % 2 == 0:
+            loses += 1
+    if x < 2 * loses:
+        return "Ben"
+    if x == 2 * loses:
+        return None
+    return "Maria"
